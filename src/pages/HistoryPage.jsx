@@ -44,10 +44,10 @@ export default function HistoryPage() {
           <SkeletonCard />
         ) : stats ? (
           <div className="grid grid-cols-2 gap-3">
-            <StatBox label="Total Analisis" value={stats.total_sessions || stats.total || 0} />
-            <StatBox label="Rata-rata Skor" value={Math.round(stats.avg_score || stats.average_score || 0)} />
-            <StatBox label="Skor Terbaik" value={stats.best_score || stats.max_score || 0} color="text-success" />
-            <StatBox label="Skor Terendah" value={stats.worst_score || stats.min_score || 0} color="text-danger" />
+            <StatBox label="Total Analisis" value={stats.data?.total_sessions || stats.total_sessions || 0} />
+            <StatBox label="Rata-rata Skor" value={Math.round(stats.data?.avg_health || stats.avg_health || stats.avg_score || 0)} />
+            <StatBox label="Skor Terbaik" value={Math.round(stats.data?.best_health || stats.best_health || 0)} color="text-success" />
+            <StatBox label="Skor Terendah" value={Math.round(stats.data?.worst_health || stats.worst_health || 0)} color="text-danger" />
           </div>
         ) : null}
 

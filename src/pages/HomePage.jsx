@@ -162,6 +162,16 @@ function HealthCard({ latest, navigate }) {
           {narrative && (
             <p className="text-xs text-text-secondary mt-1 line-clamp-2 leading-relaxed">{narrative}</p>
           )}
+          {status === "DANGER" && (
+            <button
+              onClick={(e) => { e.stopPropagation(); navigate("/result") }}
+              className="mt-3 w-full h-10 bg-danger text-white text-xs font-poppins
+                         font-semibold rounded-lg flex items-center justify-center gap-1.5
+                         active:scale-[0.98] transition-all"
+            >
+              🚨 Lihat Apa yang Harus Dilakukan Sekarang
+            </button>
+          )}
         </div>
       </div>
     </Card>

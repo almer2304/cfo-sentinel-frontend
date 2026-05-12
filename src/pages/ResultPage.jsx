@@ -24,14 +24,14 @@ export default function ResultPage() {
   if (!result) return null
 
   const data = result.result || result
-  const health   = data.health_metrics || data.health || {}
+  const health   = data.health_score || data.health_metrics || data.health || {}
   const status   = health.health_status || health.status || data.health_status || "SAFE"
-  const score    = health.health_score || health.score || data.health_score || 0
+  const score    = health.current || health.health_score || health.score || 0
   const metrics  = data.financial_metrics || data.metrics || {}
   const actions  = data.action_items || []
   const anomalies = data.anomalies || []
   const scenario = data.scenarios?.[0] || data.scenario || null
-  const forecast = data.forecast?.daily_forecast || data.forecast || []
+  const forecast = data.forecast_30d || data.forecast?.daily_forecast || data.forecast || []
   const agentLogs = data.agent_logs || data.pipeline_log || []
   const execSummary = data.executive_summary || ""
   const detailedAdvice = data.detailed_advice || ""
@@ -50,8 +50,8 @@ export default function ResultPage() {
       <div className="px-4 py-4 flex flex-col gap-4">
         <AlertBanner hasWarning={hasEarlyWarning} earlyWarning={earlyWarning} status={status} />
         <ExecSummaryCard text={execSummary} />
-        <HealthSection score={score} status={status} metrics={metrics} health={health} />
         {actions.length > 0 && <ActionItems items={actions} />}
+        <HealthSection score={score} status={status} metrics={metrics} health={health} />
         {anomalies.length > 0 && <AnomalySection items={anomalies} />}
         {scenario && <ScenarioSection scenario={scenario} />}
         {forecast.length > 0 && <ForecastSection data={forecast} />}
@@ -166,8 +166,11 @@ function AnomalySection({ items }) {
                     <span className="text-xs text-text-muted">• {a.category}</span>
                   </div>
                   <p className="text-sm text-text-primary mt-0.5">{a.description}</p>
-                  {a.deviation_percentage && (
-                    <p className="text-xs text-warning mt-0.5">+{Math.round(a.deviation_percentage)}% dari biasanya</p>
+                  {(a.deviation_pct || a.deviation_percentage) && (
+                    <p className="text-xs text-warning mt-0.5">
+                      {(a.deviation_pct || a.deviation_percentage) > 0 ? "+" : ""}
+                      {Math.round(a.deviation_pct || a.deviation_percentage)}% dari biasanya
+                    </p>
                   )}
                   {a.suggested_action && (
                     <p className="text-xs text-primary mt-1">💡 {a.suggested_action}</p>
@@ -184,22 +187,79 @@ function AnomalySection({ items }) {
 
 function ScenarioSection({ scenario }) {
   const [open, setOpen] = useState(false)
+  if (!scenario) return null
+
+  // chain_of_consequences bisa string atau array — handle keduanya
+  const consequences = Array.isArray(scenario.chain_of_consequences)
+    ? scenario.chain_of_consequences
+    : scenario.chain_of_consequences
+      ? [scenario.chain_of_consequences]
+      : []
+
+  // mitigation_steps bisa string atau array — handle keduanya
+  const mitigations = Array.isArray(scenario.mitigation_steps)
+    ? scenario.mitigation_steps
+    : scenario.mitigation_steps
+      ? [scenario.mitigation_steps]
+      : []
+
   return (
     <Card className="overflow-hidden">
-      <button className="w-full flex items-center justify-between p-4 text-left" onClick={() => setOpen(!open)}>
-        <span className="font-poppins font-semibold text-sm text-text-primary">📊 {scenario.title || "Bagaimana jika penjualan turun 20%?"}</span>
-        {open ? <ChevronUp size={16} className="text-text-muted" /> : <ChevronDown size={16} className="text-text-muted" />}
+      <button
+        className="w-full flex items-center justify-between p-4 text-left"
+        onClick={() => setOpen(!open)}
+      >
+        <div>
+          <span className="font-poppins font-semibold text-sm text-text-primary">
+            📊 Bagaimana jika penjualan turun 20%?
+          </span>
+          {scenario.new_runway_expected != null && (
+            <p className="text-xs text-text-muted mt-0.5">
+              Runway berubah jadi {scenario.new_runway_expected} hari
+            </p>
+          )}
+        </div>
+        {open
+          ? <ChevronUp size={16} className="text-text-muted" />
+          : <ChevronDown size={16} className="text-text-muted" />}
       </button>
       {open && (
-        <div className="px-4 pb-4 border-t border-border pt-3 animate-fade-in flex flex-col gap-2">
-          {scenario.chain_of_consequences?.map((c, i) => (
-            <p key={i} className="text-xs text-text-secondary">• {c}</p>
-          ))}
-          {scenario.mitigation_steps?.map((m, i) => (
-            <p key={i} className="text-xs text-success">✅ {m}</p>
-          ))}
-          {scenario.new_runway_expected && (
-            <p className="text-sm font-semibold text-text-primary mt-1">Runway baru: {scenario.new_runway_expected} hari</p>
+        <div className="px-4 pb-4 border-t border-border pt-3 animate-fade-in flex flex-col gap-3">
+          {consequences.length > 0 && (
+            <div>
+              <p className="text-xs font-semibold text-text-muted uppercase tracking-wide mb-2">
+                Yang Akan Terjadi:
+              </p>
+              {consequences.map((c, i) => (
+                <p key={i} className="text-xs text-text-secondary mb-1">• {c}</p>
+              ))}
+            </div>
+          )}
+          {mitigations.length > 0 && (
+            <div>
+              <p className="text-xs font-semibold text-text-muted uppercase tracking-wide mb-2">
+                Langkah Mitigasi:
+              </p>
+              {mitigations.map((m, i) => (
+                <p key={i} className="text-xs text-success mb-1">✅ {m}</p>
+              ))}
+            </div>
+          )}
+          {scenario.total_cuttable_amount > 0 && (
+            <div className="bg-success-light rounded-lg p-3">
+              <p className="text-xs font-semibold text-success">
+                💰 Total biaya yang bisa dipotong:{" "}
+                {new Intl.NumberFormat("id-ID", {
+                  style: "currency", currency: "IDR",
+                  minimumFractionDigits: 0,
+                }).format(scenario.total_cuttable_amount)}
+              </p>
+            </div>
+          )}
+          {scenario.new_runway_expected != null && (
+            <p className="text-sm font-semibold text-text-primary">
+              Runway setelah mitigasi: {scenario.new_runway_expected} hari
+            </p>
           )}
         </div>
       )}

@@ -90,6 +90,26 @@ export default function InputPage() {
           <p className="text-xs text-text-muted text-right">{rawInput.length} karakter</p>
         </div>
 
+        {/* Cash Balance */}
+        <div className="flex flex-col gap-1.5">
+          <label className="text-sm font-medium text-text-primary font-poppins">
+            Saldo kas kamu sekarang <span className="text-text-muted font-normal">(penting untuk akurasi)</span>
+          </label>
+          <div className="relative">
+            <span className="absolute left-4 top-1/2 -translate-y-1/2 text-text-muted text-sm font-medium">Rp</span>
+            <input
+              type="number"
+              placeholder="Contoh: 5000000"
+              value={cashBal}
+              onChange={(e) => setCashBal(e.target.value)}
+              className="input-field pl-10"
+            />
+          </div>
+          <p className="text-xs text-text-muted">
+            💡 Isi jumlah uang yang kamu punya sekarang (di dompet + rekening)
+          </p>
+        </div>
+
         {/* Quick templates */}
         <div className="flex flex-col gap-1.5">
           <label className="text-xs text-text-muted font-medium">Atau gunakan template:</label>
@@ -115,7 +135,7 @@ export default function InputPage() {
             className="w-full flex items-center justify-between p-4 text-left"
             onClick={() => setConfigOpen(!configOpen)}
           >
-            <span className="text-sm font-poppins font-medium text-text-primary">⚙️ Konfigurasi (opsional)</span>
+            <span className="text-sm font-poppins font-medium text-text-primary">🏪 Ganti jenis bisnis (opsional)</span>
             {configOpen ? <ChevronUp size={16} className="text-text-muted" /> : <ChevronDown size={16} className="text-text-muted" />}
           </button>
           {configOpen && (
@@ -138,21 +158,6 @@ export default function InputPage() {
                       {label}
                     </button>
                   ))}
-                </div>
-              </div>
-
-              {/* Cash balance */}
-              <div className="flex flex-col gap-1.5">
-                <label className="text-sm font-medium text-text-primary font-poppins">Saldo Kas Saat Ini</label>
-                <div className="relative">
-                  <span className="absolute left-4 top-1/2 -translate-y-1/2 text-text-muted text-sm font-medium">Rp</span>
-                  <input
-                    type="number"
-                    placeholder="0"
-                    value={cashBal}
-                    onChange={(e) => setCashBal(e.target.value)}
-                    className="input-field pl-10"
-                  />
                 </div>
               </div>
             </div>

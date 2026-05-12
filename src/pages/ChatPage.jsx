@@ -5,11 +5,12 @@ import { TopBar } from "../components/layout/TopBar"
 import toast from "react-hot-toast"
 
 const QUICK_CHIPS = [
-  "Berapa uang aku tahan?",
-  "Pengeluaran apa yang boros?",
-  "Kondisi keuanganku gimana?",
-  "Apa yang harus dilakukan sekarang?",
-  "Kapan aku bisa bayar gaji?",
+  "Berapa hari lagi uang aku tahan?",
+  "Pengeluaran apa yang paling boros?",
+  "Apa yang paling mendesak dilakukan?",
+  "Kondisi keuanganku bulan ini gimana?",
+  "Apa yang bisa aku hemat sekarang?",
+  "Apakah bisnisku dalam bahaya?",
 ]
 
 const INITIAL_MSG = {
@@ -79,20 +80,18 @@ export default function ChatPage() {
 
       {/* Quick chips */}
       <div className="fixed bottom-[72px] left-1/2 -translate-x-1/2 w-full max-w-[480px] z-10">
-        {messages.length <= 1 && (
-          <div className="px-4 pb-2">
-            <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-hide">
-              {QUICK_CHIPS.map((chip) => (
-                <button key={chip} onClick={() => sendMessage(chip)}
-                  className="flex-shrink-0 px-3 py-2 bg-white border border-border rounded-full text-xs
-                             text-text-secondary hover:border-primary hover:text-primary transition-all
-                             active:scale-95 whitespace-nowrap shadow-sm">
-                  {chip}
-                </button>
-              ))}
-            </div>
+        <div className="px-4 pb-2">
+          <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-hide">
+            {QUICK_CHIPS.map((chip) => (
+              <button key={chip} onClick={() => sendMessage(chip)}
+                className="flex-shrink-0 px-3 py-2 bg-white border border-border rounded-full text-xs
+                           text-text-secondary hover:border-primary hover:text-primary transition-all
+                           active:scale-95 whitespace-nowrap shadow-sm">
+                {chip}
+              </button>
+            ))}
           </div>
-        )}
+        </div>
 
         {/* Input bar */}
         <div className="bg-white border-t border-border px-4 py-3">

@@ -14,11 +14,17 @@ export default function LoadingPage() {
   const navigate = useNavigate()
   const [activeStep, setActiveStep] = useState(0)
   const [rotation, setRotation] = useState(0)
+  const [showDone, setShowDone] = useState(false)
 
   useEffect(() => {
     const iv = setInterval(() => {
       const { result, error } = useAnalysisStore.getState()
-      if (result) { clearInterval(iv); navigate("/result", { replace: true }) }
+      if (result) {
+        clearInterval(iv)
+        setActiveStep(STEPS.length - 1)
+        setShowDone(true)
+        setTimeout(() => navigate("/result", { replace: true }), 1200)
+      }
       if (error)  { clearInterval(iv); navigate("/input", { replace: true }) }
     }, 500)
     return () => clearInterval(iv)
@@ -69,6 +75,14 @@ export default function LoadingPage() {
             style={{ width: `${((activeStep + 1) / STEPS.length) * 100}%` }} />
         </div>
       </div>
+      {showDone && (
+        <div className="mt-6 text-center animate-slide-up">
+          <p className="text-2xl mb-1">✅</p>
+          <p className="font-poppins font-semibold text-success">
+            Analisis selesai!
+          </p>
+        </div>
+      )}
     </div>
   )
 }
