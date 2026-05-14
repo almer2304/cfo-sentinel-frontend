@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react"
 import { useNavigate } from "react-router-dom"
-import { ChevronRight, PenLine, Sparkles } from "lucide-react"
+import { ChevronRight, Sparkles } from "lucide-react"
 import toast from "react-hot-toast"
 import useAuthStore from "../store/useAuthStore"
 import { historyApi } from "../lib/api"
@@ -95,10 +95,12 @@ export default function HomePage() {
           </div>
         ) : null}
 
-        {/* ── PRIMARY ACTION ── */}
-        <Button onClick={() => navigate("/input")}>
-          <PenLine size={18} /> Catat Transaksi Sekarang
-        </Button>
+        {/* ── PRIMARY ACTIONS ── */}
+        <div className="flex flex-col gap-3">
+          <Button onClick={() => navigate("/input")}>
+            <Sparkles size={18} /> Analisis Transaksi AI
+          </Button>
+        </div>
 
         {/* ── INSIGHT CARD ── */}
         {hasData && latest.anomalies && latest.anomalies.length > 0 && (
@@ -156,8 +158,13 @@ function HealthCard({ latest, navigate }) {
         <HealthGauge score={score} status={status} size={110} />
         <div className="flex-1 min-w-0">
           <Badge status={status} />
-          <p className="font-poppins font-bold text-2xl text-text-primary mt-2 leading-tight">
-            Uang bertahan <span className="text-primary">{runway}</span> hari
+          <p className="font-poppins font-bold text-lg text-text-primary mt-2 leading-tight">
+            {Number(runway) > 90
+              ? <>Kondisi Kas <span className="text-success">Stabil</span></>
+              : Number(runway) > 0
+                ? <>Ketahanan Kas <span className="text-primary">{Math.round(Number(runway))}</span> hari</>
+                : <>Mulai <span className="text-primary">Pantau</span> Bisnismu</>
+            }
           </p>
           {narrative && (
             <p className="text-xs text-text-secondary mt-1 line-clamp-2 leading-relaxed">{narrative}</p>
@@ -220,7 +227,7 @@ function HistoryItem({ item }) {
         </p>
         {(item.runway_days || item.runway_expected) && (
           <p className="text-xs text-text-secondary">
-            Bertahan {item.runway_days || item.runway_expected} hari
+            Bertahan {Math.round(Number(item.runway_days || item.runway_expected) || 0)} hari
           </p>
         )}
       </div>

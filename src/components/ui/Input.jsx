@@ -6,7 +6,7 @@ export const Input = forwardRef(({ label, icon: Icon, error, ...props }, ref) =>
       {Icon && <Icon size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-text-muted" />}
       <input
         ref={ref}
-        className={`input-field ${Icon ? "pl-11" : ""} ${error ? "border-danger focus:border-danger focus:ring-danger/20" : ""}`}
+        className={`input-field ${Icon ? "!pl-11" : "!pl-4"} ${error ? "border-danger focus:border-danger focus:ring-danger/20" : ""}`}
         {...props}
       />
     </div>

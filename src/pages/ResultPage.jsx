@@ -52,14 +52,14 @@ export default function ResultPage() {
         <ExecSummaryCard text={execSummary} />
         {actions.length > 0 && <ActionItems items={actions} />}
         <HealthSection score={score} status={status} metrics={metrics} health={health} />
-        {anomalies.length > 0 && <AnomalySection items={anomalies} />}
-        {scenario && <ScenarioSection scenario={scenario} />}
-        {forecast.length > 0 && <ForecastSection data={forecast} />}
-        {agentLogs.length > 0 && <AgentSection logs={agentLogs} />}
-        {detailedAdvice && <DetailedAdviceSection text={detailedAdvice} />}
-        {uncertainty && (
-          <p className="text-xs text-text-muted italic px-1">ℹ️ {uncertainty}</p>
-        )}
+        <AdvancedDetails
+          anomalies={anomalies}
+          scenario={scenario}
+          forecast={forecast}
+          agentLogs={agentLogs}
+          detailedAdvice={detailedAdvice}
+          uncertainty={uncertainty}
+        />
         <ActionButtons navigate={navigate} />
       </div>
     </AppLayout>
@@ -101,6 +101,63 @@ function ExecSummaryCard({ text }) {
 function HealthSection({ score, status, metrics, health }) {
   const runway = health.runway_expected || health.runway_days || metrics.runway_expected || 0
   const margin = health.gross_margin || metrics.gross_margin || 0
+  const totalIncome = metrics.total_income || health.total_income || 0
+  const totalExpense = metrics.total_expense || health.total_expense || 0
+  const cashBalance = health.cash_balance || metrics.cash_balance || 0
+  const netFlow = totalIncome - totalExpense
+
+  // Build a context-aware runway explanation
+  function getRunwayDisplay() {
+    const runwayNum = Math.round(Number(runway) || 0)
+
+    // Case 1: Runway absurdly high (>90 days from a daily snapshot) — likely misleading
+    if (runwayNum > 90) {
+      return {
+        value: "Stabil",
+        color: "text-success",
+        explanation: `Pemasukan hari ini lebih besar dari pengeluaran (surplus ${formatRupiah(netFlow)}). Kondisi kas cukup sehat untuk saat ini.`
+      }
+    }
+
+    // Case 2: Net positive but moderate runway
+    if (netFlow > 0 && runwayNum > 30) {
+      return {
+        value: `${runwayNum} hari`,
+        color: "text-success",
+        explanation: `Berdasarkan rata-rata pengeluaran, saldo kas kamu diperkirakan bisa bertahan sekitar ${runwayNum} hari. Ini estimasi kasar — pantau terus ya!`
+      }
+    }
+
+    // Case 3: Moderate runway (7-30 days)
+    if (runwayNum >= 7) {
+      return {
+        value: `${runwayNum} hari`,
+        color: "text-warning",
+        explanation: `Jika pengeluaran harian rata-rata tetap seperti ini, saldo kas bisa bertahan sekitar ${runwayNum} hari. Pertimbangkan untuk mengurangi pengeluaran non-esensial.`
+      }
+    }
+
+    // Case 4: Critical (<7 days)
+    if (runwayNum > 0) {
+      return {
+        value: `${runwayNum} hari`,
+        color: "text-danger",
+        explanation: `⚠️ Perhatian! Dengan laju pengeluaran saat ini, saldo kas hanya cukup untuk sekitar ${runwayNum} hari. Segera evaluasi pengeluaran dan cari sumber pemasukan tambahan.`
+      }
+    }
+
+    // Case 5: Zero or negative — no data or already deficit
+    return {
+      value: netFlow >= 0 ? "Stabil" : "Defisit",
+      color: netFlow >= 0 ? "text-success" : "text-danger",
+      explanation: netFlow >= 0
+        ? "Data transaksi belum cukup untuk menghitung estimasi. Terus catat transaksi harian agar prediksi semakin akurat."
+        : `Pengeluaran (${formatRupiah(totalExpense)}) lebih besar dari pemasukan (${formatRupiah(totalIncome)}). Segera cari cara menambah pemasukan atau kurangi pengeluaran.`
+    }
+  }
+
+  const runwayInfo = getRunwayDisplay()
+
   return (
     <div className="flex flex-col gap-3">
       <div className="flex items-center gap-4 justify-center">
@@ -110,8 +167,15 @@ function HealthSection({ score, status, metrics, health }) {
       <div className="grid grid-cols-2 gap-3">
         <MetricCard icon="💰" label="Pemasukan" value={metrics.total_income || health.total_income} compact />
         <MetricCard icon="📤" label="Pengeluaran" value={metrics.total_expense || health.total_expense} compact color="text-danger" />
-        <MetricCard icon="⏰" label="Uang Bertahan" value={`${runway} hari`} isRupiah={false} />
+        <MetricCard icon="⏰" label="Ketahanan Kas" value={runwayInfo.value} isRupiah={false} color={runwayInfo.color} />
         <MetricCard icon="📈" label="Efisiensi" value={`${Math.round(margin)}%`} isRupiah={false} color={margin >= 50 ? "text-success" : "text-warning"} />
+      </div>
+      {/* Contextual runway explanation */}
+      <div className="bg-white border border-border rounded-xl p-3 flex items-start gap-2">
+        <span className="text-sm mt-0.5 flex-shrink-0">💡</span>
+        <p className="text-xs text-text-secondary leading-relaxed">
+          {runwayInfo.explanation}
+        </p>
       </div>
     </div>
   )
@@ -319,6 +383,38 @@ function ActionButtons({ navigate }) {
       <Button variant="secondary" onClick={() => navigate("/input")}>
         <RefreshCw size={16} /> Analisis Lagi
       </Button>
+    </div>
+  )
+}
+
+function AdvancedDetails({ anomalies, scenario, forecast, agentLogs, detailedAdvice, uncertainty }) {
+  const [open, setOpen] = useState(false)
+  const hasContent = anomalies.length > 0 || scenario || forecast.length > 0 || agentLogs.length > 0 || detailedAdvice || uncertainty
+
+  if (!hasContent) return null
+
+  return (
+    <div className="mt-2">
+      <button
+        onClick={() => setOpen(!open)}
+        className="w-full flex items-center justify-center gap-2 py-3 border border-border rounded-xl text-sm font-semibold text-text-secondary active:bg-bgwarm transition-all"
+      >
+        {open ? "Tutup Detail Lanjutan" : "Lihat Rincian & Prediksi Lanjut"}
+        {open ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+      </button>
+
+      {open && (
+        <div className="flex flex-col gap-4 mt-4 animate-fade-in">
+          {anomalies.length > 0 && <AnomalySection items={anomalies} />}
+          {scenario && <ScenarioSection scenario={scenario} />}
+          {forecast.length > 0 && <ForecastSection data={forecast} />}
+          {agentLogs.length > 0 && <AgentSection logs={agentLogs} />}
+          {detailedAdvice && <DetailedAdviceSection text={detailedAdvice} />}
+          {uncertainty && (
+            <p className="text-xs text-text-muted italic px-1 text-center">ℹ️ {uncertainty}</p>
+          )}
+        </div>
+      )}
     </div>
   )
 }

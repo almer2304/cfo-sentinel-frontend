@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react"
 import { useNavigate } from "react-router-dom"
 import useAnalysisStore from "../store/useAnalysisStore"
+import { PageTransition } from "../components/layout/PageTransition"
 
 const STEPS = [
   { label: "Membaca transaksi kamu...",         delay: 0 },
@@ -41,6 +42,7 @@ export default function LoadingPage() {
   }, [])
 
   return (
+    <PageTransition>
     <div className="min-h-screen bg-bgwarm flex flex-col items-center justify-center px-6">
       <div className="mb-8">
         <div className="w-20 h-20 bg-white rounded-2xl shadow-lg flex items-center justify-center"
@@ -84,5 +86,6 @@ export default function LoadingPage() {
         </div>
       )}
     </div>
+    </PageTransition>
   )
 }

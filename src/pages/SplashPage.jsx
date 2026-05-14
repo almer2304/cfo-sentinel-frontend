@@ -1,6 +1,7 @@
 import { useEffect } from "react"
 import { useNavigate } from "react-router-dom"
 import useAuthStore from "../store/useAuthStore"
+import { PageTransition } from "../components/layout/PageTransition"
 
 export default function SplashPage() {
   const navigate  = useNavigate()
@@ -14,6 +15,7 @@ export default function SplashPage() {
   }, [isLogged, navigate])
 
   return (
+    <PageTransition>
     <div className="min-h-screen flex flex-col items-center justify-center"
       style={{ background: "linear-gradient(160deg, #C0392B 0%, #922B21 100%)" }}>
       
@@ -40,5 +42,6 @@ export default function SplashPage() {
         ))}
       </div>
     </div>
+    </PageTransition>
   )
 }

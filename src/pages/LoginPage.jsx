@@ -6,6 +6,7 @@ import { authApi } from "../lib/api"
 import useAuthStore from "../store/useAuthStore"
 import { Button } from "../components/ui/Button"
 import { Input } from "../components/ui/Input"
+import { PageTransition } from "../components/layout/PageTransition"
 
 const BUSINESS_TYPES = [
   { value: "kuliner",  label: "🍜 Kuliner" },
@@ -71,6 +72,7 @@ export default function LoginPage() {
   }
 
   return (
+    <PageTransition>
     <div className="min-h-screen bg-bgwarm flex flex-col">
       {/* Header */}
       <div className="pt-12 pb-6 px-6 text-center"
@@ -159,7 +161,7 @@ export default function LoginPage() {
               placeholder="Minimal 6 karakter"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className={`input-field pl-11 pr-12 ${errors.password ? "border-danger focus:border-danger focus:ring-danger/20" : ""}`}
+              className={`input-field !pl-11 !pr-12 ${errors.password ? "border-danger focus:border-danger focus:ring-danger/20" : ""}`}
             />
             <button type="button" onClick={() => setShowPw(!showPw)}
               className="absolute right-4 top-1/2 -translate-y-1/2 text-text-muted p-1">
@@ -179,7 +181,7 @@ export default function LoginPage() {
                 placeholder="Ulangi password"
                 value={password2}
                 onChange={(e) => setPassword2(e.target.value)}
-                className={`input-field pl-11 pr-12 ${errors.password2 ? "border-danger focus:border-danger focus:ring-danger/20" : ""}`}
+                className={`input-field !pl-11 !pr-12 ${errors.password2 ? "border-danger focus:border-danger focus:ring-danger/20" : ""}`}
               />
               <button type="button" onClick={() => setShowPw2(!showPw2)}
                 className="absolute right-4 top-1/2 -translate-y-1/2 text-text-muted p-1">
@@ -213,5 +215,6 @@ export default function LoginPage() {
         </p>
       </div>
     </div>
+    </PageTransition>
   )
 }

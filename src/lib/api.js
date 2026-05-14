@@ -50,8 +50,11 @@ export const historyApi = {
 
 // ── CHAT ──────────────────────────────────────────────────
 export const chatApi = {
-  ask: (message, session_id = null) =>
-    api.post("/chat/ask", { message, session_id }),
+  ask: (message, session_key = null) =>
+    api.post("/chat/ask", { message, session_key }),
+  getHistory: (session_key) =>
+    api.get(`/chat/history/${session_key}`),
+  getSessions: () => api.get("/chat/sessions"),
 }
 
 export default api

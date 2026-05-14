@@ -1,5 +1,6 @@
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom"
+import { BrowserRouter, Routes, Route, Navigate, useLocation } from "react-router-dom"
 import { Toaster } from "react-hot-toast"
+import { AnimatePresence } from "framer-motion"
 import useAuthStore from "./store/useAuthStore"
 
 import SplashPage   from "./pages/SplashPage"
@@ -11,19 +12,20 @@ import ResultPage   from "./pages/ResultPage"
 import ChatPage     from "./pages/ChatPage"
 import HistoryPage  from "./pages/HistoryPage"
 import SettingsPage from "./pages/SettingsPage"
+import ExpensePage  from "./pages/ExpensePage"
+import ExpenseReportPage from "./pages/ExpenseReportPage"
 
 function Guard({ children }) {
   const isLogged = useAuthStore((s) => s.isLogged)
   return isLogged ? children : <Navigate to="/login" replace />
 }
 
-export default function App() {
+function AnimatedRoutes() {
+  const location = useLocation()
+
   return (
-    <BrowserRouter>
-      <Toaster position="top-center"
-        toastOptions={{ duration: 3500,
-          style: { borderRadius: "12px", fontFamily: "Inter, sans-serif", fontSize: "14px" } }} />
-      <Routes>
+    <AnimatePresence mode="wait">
+      <Routes location={location} key={location.pathname}>
         <Route path="/"        element={<SplashPage />} />
         <Route path="/login"   element={<LoginPage />} />
         <Route path="/home"    element={<Guard><HomePage /></Guard>} />
@@ -33,8 +35,21 @@ export default function App() {
         <Route path="/chat"    element={<Guard><ChatPage /></Guard>} />
         <Route path="/history" element={<Guard><HistoryPage /></Guard>} />
         <Route path="/settings" element={<Guard><SettingsPage /></Guard>} />
+        <Route path="/expense" element={<Guard><ExpensePage /></Guard>} />
+        <Route path="/expense/report/:id" element={<Guard><ExpenseReportPage /></Guard>} />
         <Route path="*"        element={<Navigate to="/" replace />} />
       </Routes>
+    </AnimatePresence>
+  )
+}
+
+export default function App() {
+  return (
+    <BrowserRouter>
+      <Toaster position="top-center"
+        toastOptions={{ duration: 3500,
+          style: { borderRadius: "12px", fontFamily: "Inter, sans-serif", fontSize: "14px" } }} />
+      <AnimatedRoutes />
     </BrowserRouter>
   )
 }
