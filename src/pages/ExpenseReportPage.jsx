@@ -25,26 +25,29 @@ export default function ExpenseReportPage() {
   if (!report) return null
 
   return (
-    <AppLayout>
-      <div className="bg-primary px-4 py-4 text-white flex items-center justify-between shadow-sm z-20 relative">
-        <div className="flex items-center gap-3">
-          <button onClick={() => navigate("/home")} className="p-2 hover:bg-white/10 rounded-full transition-colors">
-            <ArrowLeft size={20} />
-          </button>
-          <div>
-            <h1 className="font-poppins font-semibold text-lg leading-tight">Detail Laporan</h1>
-            <p className="text-xs text-white/80">{report.id}</p>
+    <AppLayout
+      topbar={
+        <div className="bg-primary px-4 py-4 text-white flex items-center justify-between shadow-sm z-20 relative">
+          <div className="flex items-center gap-3">
+            <button onClick={() => navigate("/home")} className="p-2 hover:bg-white/10 rounded-full transition-colors">
+              <ArrowLeft size={20} />
+            </button>
+            <div>
+              <h1 className="font-poppins font-semibold text-lg leading-tight">Detail Laporan</h1>
+              <p className="text-xs text-white/80">{report.id}</p>
+            </div>
           </div>
+          <button 
+            onClick={() => {
+              toast.success("Fitur unduh PDF akan segera hadir!")
+            }}
+            className="p-2 bg-white/20 hover:bg-white/30 rounded-xl transition-colors"
+          >
+            <Download size={18} />
+          </button>
         </div>
-        <button 
-          onClick={() => {
-            toast.success("Fitur unduh PDF akan segera hadir!")
-          }}
-          className="p-2 bg-white/20 hover:bg-white/30 rounded-xl transition-colors"
-        >
-          <Download size={18} />
-        </button>
-      </div>
+      }
+    >
 
       <div className="px-4 py-4 flex flex-col gap-5">
         {/* Summary Card */}

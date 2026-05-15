@@ -40,12 +40,15 @@ export default function ResultPage() {
   const hasEarlyWarning = earlyWarning?.has_warning || data.has_early_warning || false
 
   return (
-    <AppLayout>
-      <TopBar title="Hasil Analisis" right={
-        <button onClick={() => navigate("/input")} className="text-xs text-primary font-semibold px-3 py-1.5 rounded-lg hover:bg-primary-light transition-all">
-          Analisis Lagi
-        </button>
-      } />
+    <AppLayout
+      topbar={
+        <TopBar title="Hasil Analisis" right={
+          <button onClick={() => navigate("/input")} className="text-xs text-primary font-semibold px-3 py-1.5 rounded-lg hover:bg-primary-light transition-all">
+            Analisis Lagi
+          </button>
+        } />
+      }
+    >
 
       <div className="px-4 py-4 flex flex-col gap-4">
         <AlertBanner hasWarning={hasEarlyWarning} earlyWarning={earlyWarning} status={status} />

@@ -61,16 +61,19 @@ export default function ExpensePage() {
   }
 
   return (
-    <AppLayout>
-      <div className="bg-primary px-4 py-4 text-white flex items-center gap-3 shadow-sm z-20 relative">
-        <button onClick={() => navigate(-1)} className="p-2 hover:bg-white/10 rounded-full transition-colors">
-          <ArrowLeft size={20} />
-        </button>
-        <div>
-          <h1 className="font-poppins font-semibold text-lg leading-tight">Catat Pengeluaran</h1>
-          <p className="text-xs text-white/80">Tanpa analisis AI</p>
+    <AppLayout
+      topbar={
+        <div className="bg-primary px-4 py-4 text-white flex items-center gap-3 shadow-sm z-20 relative">
+          <button onClick={() => navigate(-1)} className="p-2 hover:bg-white/10 rounded-full transition-colors">
+            <ArrowLeft size={20} />
+          </button>
+          <div>
+            <h1 className="font-poppins font-semibold text-lg leading-tight">Catat Pengeluaran</h1>
+            <p className="text-xs text-white/80">Tanpa analisis AI</p>
+          </div>
         </div>
-      </div>
+      }
+    >
 
       <div className="px-4 py-4 flex flex-col gap-6">
         {/* Form Input */}

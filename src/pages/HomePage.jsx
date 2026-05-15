@@ -51,10 +51,9 @@ export default function HomePage() {
     .toUpperCase()
 
   return (
-    <AppLayout>
-      <div className="px-4 pt-4 flex flex-col gap-4">
-        {/* ── GREETING ── */}
-        <div className="flex items-center justify-between">
+    <AppLayout
+      topbar={
+        <div className="bg-white border-b border-border px-4 py-3 flex items-center justify-between z-10 relative shadow-sm">
           <div>
             <h1 className="font-poppins font-semibold text-xl text-text-primary">
               Halo, {user?.business_name || "Pebisnis"} 👋
@@ -65,6 +64,9 @@ export default function HomePage() {
             <span className="text-white font-poppins font-bold text-sm">{initials}</span>
           </div>
         </div>
+      }
+    >
+      <div className="px-4 pt-4 flex flex-col gap-4">
 
         {/* ── HEALTH CARD ── */}
         {loading ? (

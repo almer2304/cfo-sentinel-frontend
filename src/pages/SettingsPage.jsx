@@ -37,8 +37,7 @@ export default function SettingsPage() {
   }
 
   return (
-    <AppLayout>
-      <TopBar title="⚙️ Setelan" showBack={false} />
+    <AppLayout topbar={<TopBar title="⚙️ Setelan" showBack={false} />}>
       <div className="px-4 py-4 flex flex-col gap-4">
         {/* Profile card */}
         <Card className="p-6 flex flex-col items-center text-center">

@@ -79,17 +79,21 @@ export default function InputPage() {
     recognition.interimResults = true       // Show interim for better UX
     recognition.maxAlternatives = 3         // More alternatives = better proper noun matching
 
-    let finalTranscript = ""
+    const initialInput = rawInput.replace(/\n?🎤 .*$/, "").trim()
+    let hasSpeech = false
 
     recognition.onstart = () => {
       setIsRecording(true)
-      finalTranscript = ""
+      hasSpeech = false
       toast("🎙️ Mendengarkan... Tekan lagi untuk berhenti", { duration: 3000 })
     }
 
     recognition.onresult = (event) => {
+      if (event.results.length > 0) hasSpeech = true
       let interim = ""
-      for (let i = event.resultIndex; i < event.results.length; i++) {
+      let finalStr = ""
+      
+      for (let i = 0; i < event.results.length; i++) {
         const result = event.results[i]
         if (result.isFinal) {
           // Pick best transcript from alternatives
@@ -100,19 +104,26 @@ export default function InputPage() {
               best = result[j].transcript
             }
           }
-          finalTranscript += best + " "
+          finalStr += best + " "
         } else {
           interim += result[0].transcript
         }
       }
 
-      // Update textarea with combined final + interim results
-      setRawInput((prev) => {
-        const base = prev.replace(/\n?🎤 .*$/, "") // Remove previous interim line
-        const combined = finalTranscript.trim()
-        const display = combined + (interim ? `\n🎤 ${interim}` : "")
-        return base ? base + "\n" + display : display
-      })
+      const combined = finalStr.trim()
+      let display = combined
+      if (interim) {
+        display += display ? `\n🎤 ${interim}` : `🎤 ${interim}`
+      }
+
+      let newText = initialInput
+      if (newText && display) {
+        newText += "\n" + display
+      } else if (display) {
+        newText = display
+      }
+
+      setRawInput(newText)
     }
 
     recognition.onerror = (event) => {
@@ -130,7 +141,7 @@ export default function InputPage() {
     recognition.onend = () => {
       // Clean up interim markers from final text
       setRawInput((prev) => prev.replace(/\n?🎤 .*$/, "").trim())
-      if (finalTranscript.trim()) {
+      if (hasSpeech) {
         toast.success("Berhasil mencatat suara!")
       }
       setIsRecording(false)
@@ -172,9 +183,7 @@ export default function InputPage() {
   }
 
   return (
-    <AppLayout>
-      <TopBar title="Catat Transaksi" subtitle="Ceritakan keuangan bisnismu" />
-
+    <AppLayout topbar={<TopBar title="Catat Transaksi" subtitle="Ceritakan keuangan bisnismu" />}>
       <div className="px-4 py-4 flex flex-col gap-4">
 
         {/* Period selector */}

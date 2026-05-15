@@ -3,6 +3,7 @@ import { Toaster } from "react-hot-toast"
 import { AnimatePresence } from "framer-motion"
 import useAuthStore from "./store/useAuthStore"
 
+import { BottomNav } from "./components/layout/BottomNav"
 import SplashPage   from "./pages/SplashPage"
 import LoginPage    from "./pages/LoginPage"
 import HomePage     from "./pages/HomePage"
@@ -43,13 +44,26 @@ function AnimatedRoutes() {
   )
 }
 
+function MainApp() {
+  const location = useLocation()
+  const navRoutes = ["/home", "/input", "/history", "/chat", "/settings", "/expense"]
+  const showNav = navRoutes.includes(location.pathname)
+
+  return (
+    <>
+      <AnimatedRoutes />
+      {showNav && <BottomNav />}
+    </>
+  )
+}
+
 export default function App() {
   return (
     <BrowserRouter>
       <Toaster position="top-center"
         toastOptions={{ duration: 3500,
           style: { borderRadius: "12px", fontFamily: "Inter, sans-serif", fontSize: "14px" } }} />
-      <AnimatedRoutes />
+      <MainApp />
     </BrowserRouter>
   )
 }

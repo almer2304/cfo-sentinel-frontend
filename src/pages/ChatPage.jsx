@@ -115,21 +115,24 @@ export default function ChatPage() {
   }
 
   return (
-    <AppLayout>
-      <TopBar
-        title="💬 Tanya CFO Sentinel"
-        subtitle="Online • Mengingat percakapan kamu"
-        showBack={false}
-        right={
-          <button
-            onClick={handleNewChat}
-            className="p-2 rounded-xl hover:bg-bgwarm active:scale-95 transition-all"
-            title="Mulai percakapan baru"
-          >
-            <Plus size={20} className="text-text-secondary" />
-          </button>
-        }
-      />
+    <AppLayout
+      topbar={
+        <TopBar
+          title="💬 Tanya CFO Sentinel"
+          subtitle="Online • Mengingat percakapan kamu"
+          showBack={false}
+          right={
+            <button
+              onClick={handleNewChat}
+              className="p-2 rounded-xl hover:bg-bgwarm active:scale-95 transition-all"
+              title="Mulai percakapan baru"
+            >
+              <Plus size={20} className="text-text-secondary" />
+            </button>
+          }
+        />
+      }
+    >
 
       {/* Quick chips — selalu tampil */}
       <div className="px-4 pt-3 pb-1">

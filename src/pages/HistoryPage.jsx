@@ -37,8 +37,7 @@ export default function HistoryPage() {
   }
 
   return (
-    <AppLayout>
-      <TopBar title="📊 Riwayat Analisis" showBack={false} />
+    <AppLayout topbar={<TopBar title="📊 Riwayat Analisis" showBack={false} />}>
       <div className="px-4 py-4 flex flex-col gap-4">
         {/* Stats summary */}
         {loading ? (
@@ -111,6 +110,7 @@ function HistoryItemCard({ item, onSelect }) {
         {narrative && (
           <p className="text-xs text-text-muted mt-0.5 line-clamp-2">{narrative}</p>
         )}
+        <p className="text-[10px] text-primary font-medium mt-1.5">Lihat selengkapnya →</p>
       </div>
       <ChevronRight size={16} className="text-text-muted flex-shrink-0" />
     </Card>
